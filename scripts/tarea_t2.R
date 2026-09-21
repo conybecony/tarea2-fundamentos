@@ -21,12 +21,15 @@ dim(casen)      # 60  6
 
 dim(ingresos)   # 60 10
 
+str(casen) 
+str(ingresos)
+
 names(casen)    # "region" "sector" "educ" "edad" "ingreso" "genero" 
 
 names(ingresos) #"region" "sector" "genero" "educ" "edad" "horas" "ing_trabajo" 
 # "ing_capital"  "ing_subsidios" "ing_total"    
 
-sum(is.na(casen$ingreso)) # 5 NA
+sum(is.na(casen$ingreso)) # hay 5 NA
 
 # 2b Columnas por patrón
 names(select(ingresos, starts_with("ing"))) # 4  
@@ -34,14 +37,13 @@ names(select(ingresos, where(is.numeric)))  # 7
 # no dan lo mismo porque en la segunda se busca cuando solo son las columnas
 # númericas y en el primero solo las que empiecen con la palabra ing que hay 4.
 
-# 3
-casen_resultado <- casen |> 
+# 3a
+casen_mod <- casen |> 
   filter(edad > 20 & !is.na(ingreso)) |> 
   select(ingreso, sector, edad, educ) |> 
   mutate(
     experiencia = pmax(edad - educ - 6, 0)) |> 
-   group_by(sector) |> 
-   summarise(
+  summarise(
     n   = n(), 
     ingreso_promedio = mean(ingreso, na.rm = TRUE)) |> 
     arrange(desc(ingreso_promedio)) 
@@ -59,14 +61,14 @@ casen <- casen |>
 table(casen$grupo_etario, useNA = "ifany")
 
 # 4a
-casen_sector <- casen |> 
+casen_sector <- casen |>  # tabla de 6x3
   group_by(sector) |> 
   summarise(
   n = n(),
   sector_ingreso = mean(ingreso, na.rm = T)
   )
 
-casen_sector_edad <- casen |> 
+casen_sector_edad <- casen |> #tabla de 54x4
   group_by(sector, edad) |> 
   summarise(
   n = n(),
@@ -74,9 +76,13 @@ casen_sector_edad <- casen |>
   )
 
 # 4b
-casen |> 
-  group_by(sector) |> 
-  mutate()
+casen |>
+  group_by(sector) |>
+  mutate(experiencia = pmax(edad - educ - 6, 0)) |>
+  ungroup()
+
+# cuando uno usa summarise(), este agrupa las filas y se hace la operación en 
+# esa fila, pero no ocupandola, la operación va fila por fila.
 
 # 5
 mean(casen$ingreso, na.rm = TRUE) # 655290.9
@@ -111,9 +117,12 @@ casen_resultado <- casen |>
 # Sin embargo una limitación de los datos es el pequeño número de de personas
 # en algunos sectores, como Construcción, que cuenta con solo 5 observaciones.
 
+# Guardar casen_resultado en la carpeta  
+dir.create("data/processed", showWarnings = FALSE)
+write.csv(casen_resultado, "data/processed/casen_resultado_t2.csv", row.names = FALSE)
 
-
-
+# Revisar si se guardó
+file.exists("data/processed/casen_resultado_t2.csv")
 
 
 
