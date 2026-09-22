@@ -4,7 +4,7 @@
 # Septiembre 2026
 
 # 1 responde a la pregunta: 
-# ¿En qué sector económico las personas mayores de 20 años tienen el mayor 
+# ¿En qué sector económico las personas mayores de 30 años tienen el mayor 
 # ingreso promedio?
 
 # cargar paquetes
@@ -38,8 +38,8 @@ names(select(ingresos, where(is.numeric)))  # 7
 # númericas y en el primero solo las que empiecen con la palabra ing que hay 4.
 
 # 3a
-casen_mod <- casen |> 
-  filter(edad > 20 & !is.na(ingreso)) |> 
+casen |> 
+  filter(edad > 30 & !is.na(ingreso)) |> 
   select(ingreso, sector, edad, educ) |> 
   mutate(
     experiencia = pmax(edad - educ - 6, 0)) |> 
@@ -53,9 +53,9 @@ casen <- casen |>
   mutate( casen,
           experiencia = pmax(edad - educ - 6, 0),
           grupo_etario = case_when(
-          edad  < 20  ~ "Menores a 20 años",
-          edad == 20  ~ "Igual a 20 años",
-          TRUE        ~ "mayores a 20 años"
+          edad  < 30  ~ "Menores a 30 años",
+          edad == 30  ~ "Igual a 30 años",
+          TRUE        ~ "Mayores a 30 años"
 ))
 
 table(casen$grupo_etario, useNA = "ifany")
@@ -82,7 +82,7 @@ casen |>
   ungroup()
 
 # cuando uno usa summarise(), este agrupa las filas y se hace la operación en 
-# esa fila, pero no ocupandola, la operación va fila por fila.
+# esa fila, pero no ocupando la formula, la operación va fila por fila.
 
 # 5
 mean(casen$ingreso, na.rm = TRUE) # 655290.9
@@ -94,28 +94,34 @@ sum(is.na(casen$ingreso))         # 5 datos NA
 
 # 6
 casen_resultado <- casen |> 
-  filter(grupo_etario == "mayores a 20 años"  & !is.na(ingreso)) |> 
+   mutate( 
+     experiencia = pmax(edad - educ - 6, 0),
+     grupo_etario = case_when(
+       edad  < 30  ~ "Menores a 30 años",
+       edad == 30  ~ "Igual a 30 años",
+       TRUE        ~ "Mayores a 30 años"
+     )) |> 
+  filter(grupo_etario == "Mayores a 30 años"  & !is.na(ingreso)) |> 
   select(ingreso, sector, edad, educ) |> 
-  mutate(
-    experiencia = pmax(edad - educ - 6, 0)) |> 
   group_by(sector) |> 
   summarise(
     n   = n(), 
     ingreso_promedio = mean(ingreso, na.rm = TRUE)) |> 
   arrange(desc(ingreso_promedio)) 
   
+casen_resultado
+
 # 7 Interpretación
 
-# El sector donde las personas mayores de 20 años presenta un mayor ingreso promedio
-# es Educación, con $908857, le sigue Servicios, con $806786, en tercer lugar
-# Industria, con $697889 y en el último lugar está Agricultura, con $446250.
+# El sector donde las personas mayores de 30 años presenta un mayor ingreso promedio
+# es Educación, con $931250, le sigue Servicios, con $820364, en tercer lugar
+# Industria, con $682833 y en el último lugar está Agricultura, con $461727
 # Estos resultados muestran que el sector se asocia con el ingreso promedio,
 # ya que las personas que trabajan en Educación presentan ingresos promedio más 
 # altos que quienes trabajan en Agricultura. Esto podría relacionarse con las 
 # diferencias en las condiciones laborales y las remuneraciones propias de cada 
-# sector.
-# Sin embargo una limitación de los datos es el pequeño número de de personas
-# en algunos sectores, como Construcción, que cuenta con solo 5 observaciones.
+# sector. Sin embargo una limitación de los datos es el pequeño número de personas
+# en algunos sectores, como Educación y Construcción, que cuenta con solo 4 observaciones.
 
 # Guardar casen_resultado en la carpeta  
 dir.create("data/processed", showWarnings = FALSE)

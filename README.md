@@ -5,7 +5,7 @@
 Responder una **pregunta económica propia** usando los cinco verbos de dplyr y
 `group_by()`, y **explicar en palabras** lo que muestran los números.
 
-la pregunta: ¿En qué sector económico las personas mayores de 20 años tienen 
+la pregunta: ¿En qué sector económico las personas mayores de 30 años tienen 
 el mayor ingreso promedio?
 
 ## Datos
