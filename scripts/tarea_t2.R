@@ -74,13 +74,13 @@ casen_sector_edad <- casen |> #tabla de 54x4
   group_by(sector, edad) |> 
   summarise(
   n = n(),
-  sector_edad = mean(ingreso, na.rm = T)
+  sector_ingreso = mean(ingreso, na.rm = T)
   )
 
 # 4b
 casen |>
   group_by(sector) |>
-  mutate(experiencia = pmax(edad - educ - 6, 0)) |>
+  mutate(sector_ingreso = mean(ingreso, na.rm = T)) |>
   ungroup()
 
 # cuando uno usa summarise() con group_by (), este agrupa las filas y se hace 
