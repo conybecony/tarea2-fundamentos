@@ -1,7 +1,9 @@
 
 # Constanza Pinilla
-
 # Septiembre 2026
+# calcula en qué sector económico las personas mayores de 30 años tienen el mayor 
+# ingreso promedio, sacando promedios y agregando nuevas columnas que nos ayudarán
+# a este calculo.
 
 # 1 responde a la pregunta: 
 # ¿En qué sector económico las personas mayores de 30 años tienen el mayor 
@@ -81,8 +83,9 @@ casen |>
   mutate(experiencia = pmax(edad - educ - 6, 0)) |>
   ungroup()
 
-# cuando uno usa summarise(), este agrupa las filas y se hace la operación en 
-# esa fila, pero no ocupando la formula, la operación va fila por fila.
+# cuando uno usa summarise() con group_by (), este agrupa las filas y se hace 
+# la operación en esa fila, pero no ocupando la formula y con mutate () 
+# la operación va fila por fila.
 
 # 5
 mean(casen$ingreso, na.rm = TRUE) # 655290.9
